@@ -1,0 +1,26 @@
+# Compilação do .NET
+bin/
+obj/
+out/
+
+# Build do .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Config local
+*.swp
+*.DS_Store
+*.vscode/
+launchSettings.json
+
+# Logs 
+*.log
+
