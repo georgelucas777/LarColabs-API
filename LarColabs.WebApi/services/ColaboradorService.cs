@@ -31,6 +31,12 @@ namespace LarColabs.WebApi.Services
 
         public async Task<Colaborador> AdicionarAsync(Colaborador colaborador, int usuarioId)
         {
+            var cpfExistente = await _context.Colaboradores
+                .AnyAsync(c => c.CPF == colaborador.CPF);
+
+            if (cpfExistente)
+                throw new InvalidOperationException("Já existe um colaborador com este CPF.");
+
             colaborador.CriadoPor = usuarioId;
             colaborador.CriadoEm = DateTime.UtcNow;
             colaborador.Ativo = true;
@@ -44,6 +50,12 @@ namespace LarColabs.WebApi.Services
         {
             var colaborador = await _context.Colaboradores.FindAsync(id);
             if (colaborador == null) return null;
+
+            var cpfExistente = await _context.Colaboradores
+                .AnyAsync(c => c.CPF == colaboradorAtualizado.CPF && c.Id != id);
+
+            if (cpfExistente)
+                throw new InvalidOperationException("Já existe outro colaborador com este CPF.");
 
             colaborador.NomeCompleto = colaboradorAtualizado.NomeCompleto;
             colaborador.CPF = colaboradorAtualizado.CPF;

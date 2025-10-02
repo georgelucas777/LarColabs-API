@@ -32,6 +32,12 @@ namespace LarColabs.WebApi.Services
 
         public async Task<Usuario> AdicionarAsync(Usuario usuario)
         {
+            if (await _context.Usuarios.AnyAsync(u => u.Email == usuario.Email))
+                throw new InvalidOperationException("E-mail já cadastrado para outro usuário.");
+
+            if (await _context.Usuarios.AnyAsync(u => u.Cpf == usuario.Cpf))
+                throw new InvalidOperationException("CPF já cadastrado para outro usuário.");
+
             usuario.Senha = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
             usuario.CriadoEm = DateTime.UtcNow;
 
@@ -44,6 +50,14 @@ namespace LarColabs.WebApi.Services
         {
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) return null;
+
+            if (usuario.Email != usuarioAtualizado.Email &&
+                await _context.Usuarios.AnyAsync(u => u.Email == usuarioAtualizado.Email && u.Id != id))
+                throw new InvalidOperationException("E-mail já cadastrado para outro usuário.");
+
+            if (usuario.Cpf != usuarioAtualizado.Cpf &&
+                await _context.Usuarios.AnyAsync(u => u.Cpf == usuarioAtualizado.Cpf && u.Id != id))
+                throw new InvalidOperationException("CPF já cadastrado para outro usuário.");
 
             usuario.Nome = usuarioAtualizado.Nome;
             usuario.Email = usuarioAtualizado.Email;
