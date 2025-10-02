@@ -13,12 +13,21 @@ namespace LarColabs.WebApi.Services
             _context = context;
         }
 
-        public async Task<ColaboradorTelefone?> VincularAsync(int colaboradorId, int telefoneId, int usuarioId)
+        public async Task<ColaboradorTelefone> VincularAsync(int colaboradorId, int telefoneId, int usuarioId)
         {
+            var colaborador = await _context.Colaboradores.FindAsync(colaboradorId);
+            if (colaborador == null)
+                throw new InvalidOperationException("Colaborador não encontrado.");
+
+            var telefone = await _context.Telefones.FindAsync(telefoneId);
+            if (telefone == null)
+                throw new InvalidOperationException("Telefone não encontrado.");
+
             var existe = await _context.ColaboradoresTelefones
                 .FirstOrDefaultAsync(ct => ct.ColaboradorId == colaboradorId && ct.TelefoneId == telefoneId);
 
-            if (existe != null) return existe;
+            if (existe != null)
+                throw new InvalidOperationException("Este telefone já está vinculado a este colaborador.");
 
             var vinculo = new ColaboradorTelefone
             {
@@ -49,7 +58,8 @@ namespace LarColabs.WebApi.Services
             var vinculo = await _context.ColaboradoresTelefones
                 .FirstOrDefaultAsync(ct => ct.ColaboradorId == colaboradorId && ct.TelefoneId == telefoneId);
 
-            if (vinculo == null) return false;
+            if (vinculo == null)
+                throw new InvalidOperationException("Vínculo não encontrado.");
 
             _context.ColaboradoresTelefones.Remove(vinculo);
 

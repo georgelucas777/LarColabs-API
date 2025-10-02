@@ -31,6 +31,12 @@ namespace LarColabs.WebApi.Services
 
         public async Task<Telefone> AdicionarAsync(Telefone telefone, int usuarioId)
         {
+            bool existe = await _context.Telefones
+                .AnyAsync(t => t.DDD == telefone.DDD && t.Numero == telefone.Numero);
+
+            if (existe)
+                throw new InvalidOperationException("Já existe um telefone cadastrado com esse DDD e número.");
+
             telefone.CriadoPor = usuarioId;
             telefone.CriadoEm = DateTime.UtcNow;
 
@@ -43,6 +49,12 @@ namespace LarColabs.WebApi.Services
         {
             var telefone = await _context.Telefones.FindAsync(id);
             if (telefone == null) return null;
+
+            bool existe = await _context.Telefones
+                .AnyAsync(t => t.Id != id && t.DDD == telefoneAtualizado.DDD && t.Numero == telefoneAtualizado.Numero);
+
+            if (existe)
+                throw new InvalidOperationException("Já existe outro telefone com esse DDD e número.");
 
             telefone.DDD = telefoneAtualizado.DDD;
             telefone.Numero = telefoneAtualizado.Numero;
@@ -57,14 +69,14 @@ namespace LarColabs.WebApi.Services
             return telefone;
         }
 
-        public async Task<bool> RemoverAsync(int id)
+        public async Task RemoverAsync(int id)
         {
             var telefone = await _context.Telefones.FindAsync(id);
-            if (telefone == null) return false;
+            if (telefone == null)
+                throw new InvalidOperationException("Telefone não encontrado.");
 
             _context.Telefones.Remove(telefone);
             await _context.SaveChangesAsync();
-            return true;
         }
     }
 }

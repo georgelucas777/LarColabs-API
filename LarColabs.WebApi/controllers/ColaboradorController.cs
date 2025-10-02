@@ -1,3 +1,5 @@
+using AutoMapper;
+using LarColabs.WebApi.DTOs;
 using LarColabs.WebApi.Models;
 using LarColabs.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -13,13 +15,16 @@ namespace LarColabs.WebApi.Controllers
     {
         private readonly ColaboradorService _colaboradorService;
         private readonly ColaboradorTelefoneService _colaboradorTelefoneService;
+        private readonly IMapper _mapper;
 
         public ColaboradorController(
             ColaboradorService colaboradorService, 
-            ColaboradorTelefoneService colaboradorTelefoneService)
+            ColaboradorTelefoneService colaboradorTelefoneService,
+            IMapper mapper)
         {
             _colaboradorService = colaboradorService;
             _colaboradorTelefoneService = colaboradorTelefoneService;
+            _mapper = mapper;
         }
 
         private int ObterUsuarioId()
@@ -29,39 +34,49 @@ namespace LarColabs.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Colaborador>>> ObterTodos()
+        public async Task<ActionResult<IEnumerable<ColaboradorReadDto>>> ObterTodos()
         {
             var colaboradores = await _colaboradorService.ObterTodosAsync();
-            return Ok(colaboradores);
+            var colaboradoresDto = _mapper.Map<IEnumerable<ColaboradorReadDto>>(colaboradores);
+            return Ok(colaboradoresDto);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Colaborador>> ObterPorId(int id)
+        public async Task<ActionResult<ColaboradorReadDto>> ObterPorId(int id)
         {
             var colaborador = await _colaboradorService.ObterPorIdAsync(id);
             if (colaborador == null) return NotFound();
-            return Ok(colaborador);
+
+            var colaboradorDto = _mapper.Map<ColaboradorReadDto>(colaborador);
+            return Ok(colaboradorDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Colaborador>> Adicionar(Colaborador colaborador)
+        public async Task<ActionResult<ColaboradorReadDto>> Adicionar([FromBody] ColaboradorCreateDto dto)
         {
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
+            var colaborador = _mapper.Map<Colaborador>(dto);
             var novoColaborador = await _colaboradorService.AdicionarAsync(colaborador, usuarioId);
-            return CreatedAtAction(nameof(ObterPorId), new { id = novoColaborador.Id }, novoColaborador);
+
+            var colaboradorDto = _mapper.Map<ColaboradorReadDto>(novoColaborador);
+            return CreatedAtAction(nameof(ObterPorId), new { id = colaboradorDto.Id }, colaboradorDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Colaborador>> Atualizar(int id, Colaborador colaboradorAtualizado)
+        public async Task<ActionResult<ColaboradorReadDto>> Atualizar(int id, [FromBody] ColaboradorUpdateDto dto)
         {
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
-            var colaborador = await _colaboradorService.AtualizarAsync(id, colaboradorAtualizado, usuarioId);
-            if (colaborador == null) return NotFound();
-            return Ok(colaborador);
+            var colaborador = _mapper.Map<Colaborador>(dto);
+            var colaboradorAtualizado = await _colaboradorService.AtualizarAsync(id, colaborador, usuarioId);
+
+            if (colaboradorAtualizado == null) return NotFound();
+
+            var colaboradorDto = _mapper.Map<ColaboradorReadDto>(colaboradorAtualizado);
+            return Ok(colaboradorDto);
         }
 
         [HttpDelete("{id}")]
@@ -78,14 +93,20 @@ namespace LarColabs.WebApi.Controllers
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
-            var vinculo = await _colaboradorTelefoneService.VincularAsync(colaboradorId, telefoneId, usuarioId);
-            if (vinculo == null) return BadRequest("Não foi possível criar o vínculo (já existe ou dados inválidos).");
-
-            return CreatedAtAction(nameof(ObterPorId), new { id = colaboradorId }, new 
+            try
             {
-                message = "Telefone vinculado com sucesso!",
-                vinculo
-            });
+                var vinculo = await _colaboradorTelefoneService.VincularAsync(colaboradorId, telefoneId, usuarioId);
+
+                return Ok(new
+                {
+                    message = "Telefone vinculado com sucesso!",
+                    vinculo
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpDelete("{colaboradorId}/DesvincularTelefone/{telefoneId}")]
@@ -94,10 +115,15 @@ namespace LarColabs.WebApi.Controllers
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
-            var sucesso = await _colaboradorTelefoneService.DesvincularAsync(colaboradorId, telefoneId, usuarioId);
-            if (!sucesso) return NotFound("Vínculo não encontrado.");
-
-            return Ok(new { message = "Telefone desvinculado com sucesso!" });
+            try
+            {
+                await _colaboradorTelefoneService.DesvincularAsync(colaboradorId, telefoneId, usuarioId);
+                return Ok(new { message = "Telefone desvinculado com sucesso!" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
     }
 }
