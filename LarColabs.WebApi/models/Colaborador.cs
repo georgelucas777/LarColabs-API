@@ -14,7 +14,8 @@ namespace LarColabs.WebApi.Models
         [Required, StringLength(11)]
         public string CPF { get; set; }
 
-        public DateTime DataNascimento { get; set; }
+        [Column(TypeName = "date")]
+        public DateOnly DataNascimento { get; set; }
 
         public bool Ativo { get; set; } = true;
 
@@ -25,5 +26,6 @@ namespace LarColabs.WebApi.Models
         public DateTime? AtualizadoEm { get; set; }
 
         public ICollection<ColaboradorTelefone> ColaboradoresTelefones { get; set; }
+            = new List<ColaboradorTelefone>();
     }
 }

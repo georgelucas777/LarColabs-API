@@ -12,10 +12,14 @@ namespace LarColabs.WebApi.Controllers
     public class ColaboradorController : ControllerBase
     {
         private readonly ColaboradorService _colaboradorService;
+        private readonly ColaboradorTelefoneService _colaboradorTelefoneService;
 
-        public ColaboradorController(ColaboradorService colaboradorService)
+        public ColaboradorController(
+            ColaboradorService colaboradorService, 
+            ColaboradorTelefoneService colaboradorTelefoneService)
         {
             _colaboradorService = colaboradorService;
+            _colaboradorTelefoneService = colaboradorTelefoneService;
         }
 
         private int ObterUsuarioId()
@@ -66,6 +70,34 @@ namespace LarColabs.WebApi.Controllers
             var sucesso = await _colaboradorService.RemoverAsync(id);
             if (!sucesso) return NotFound();
             return NoContent();
+        }
+
+        [HttpPost("{colaboradorId}/VincularTelefone/{telefoneId}")]
+        public async Task<ActionResult> VincularTelefone(int colaboradorId, int telefoneId)
+        {
+            var usuarioId = ObterUsuarioId();
+            if (usuarioId == 0) return Unauthorized();
+
+            var vinculo = await _colaboradorTelefoneService.VincularAsync(colaboradorId, telefoneId, usuarioId);
+            if (vinculo == null) return BadRequest("Não foi possível criar o vínculo (já existe ou dados inválidos).");
+
+            return CreatedAtAction(nameof(ObterPorId), new { id = colaboradorId }, new 
+            {
+                message = "Telefone vinculado com sucesso!",
+                vinculo
+            });
+        }
+
+        [HttpDelete("{colaboradorId}/DesvincularTelefone/{telefoneId}")]
+        public async Task<ActionResult> DesvincularTelefone(int colaboradorId, int telefoneId)
+        {
+            var usuarioId = ObterUsuarioId();
+            if (usuarioId == 0) return Unauthorized();
+
+            var sucesso = await _colaboradorTelefoneService.DesvincularAsync(colaboradorId, telefoneId, usuarioId);
+            if (!sucesso) return NotFound("Vínculo não encontrado.");
+
+            return Ok(new { message = "Telefone desvinculado com sucesso!" });
         }
     }
 }

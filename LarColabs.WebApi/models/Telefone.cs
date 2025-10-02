@@ -31,6 +31,7 @@ namespace LarColabs.WebApi.Models
         public int CriadoPor { get; set; }
         public int? AtualizadoPor { get; set; }
 
-        public ICollection<ColaboradorTelefone> ColaboradoresTelefones { get; set; }
+        public ICollection<ColaboradorTelefone> ColaboradoresTelefones { get; set; } 
+            = new List<ColaboradorTelefone>();
     }
 }

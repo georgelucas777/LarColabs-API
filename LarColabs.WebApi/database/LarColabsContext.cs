@@ -10,6 +10,7 @@ namespace LarColabs.WebApi.Database
         public DbSet<Colaborador> Colaboradores { get; set; }
         public DbSet<Telefone> Telefones { get; set; }
         public DbSet<ColaboradorTelefone> ColaboradoresTelefones { get; set; }
+        public DbSet<ColaboradorTelefoneLog> ColaboradorTelefoneLog { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<UsuarioLoginLog> UsuarioLoginLogs { get; set; }
 

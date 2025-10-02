@@ -50,8 +50,8 @@ namespace LarColabs.WebApi.Database.Migrations
                     b.Property<int>("CriadoPor")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("DataNascimento")
+                        .HasColumnType("date");
 
                     b.Property<string>("NomeCompleto")
                         .IsRequired()
@@ -74,22 +74,14 @@ namespace LarColabs.WebApi.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AtualizadoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("AtualizadoPor")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("ColaboradorId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CriadoPor")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TelefoneId")
                         .HasColumnType("integer");
@@ -104,6 +96,40 @@ namespace LarColabs.WebApi.Database.Migrations
                     b.ToTable("ColaboradoresTelefones");
                 });
 
+            modelBuilder.Entity("LarColabs.WebApi.Models.ColaboradorTelefoneLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Acao")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ColaboradorId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TelefoneId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColaboradorId");
+
+                    b.HasIndex("TelefoneId");
+
+                    b.ToTable("ColaboradorTelefoneLog");
+                });
+
             modelBuilder.Entity("LarColabs.WebApi.Models.Telefone", b =>
                 {
                     b.Property<int>("Id")
@@ -115,8 +141,14 @@ namespace LarColabs.WebApi.Database.Migrations
                     b.Property<DateTime?>("AtualizadoEm")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("AtualizadoPor")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CriadoPor")
+                        .HasColumnType("integer");
 
                     b.Property<string>("DDD")
                         .IsRequired()
@@ -229,6 +261,25 @@ namespace LarColabs.WebApi.Database.Migrations
 
                     b.HasOne("LarColabs.WebApi.Models.Telefone", "Telefone")
                         .WithMany("ColaboradoresTelefones")
+                        .HasForeignKey("TelefoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colaborador");
+
+                    b.Navigation("Telefone");
+                });
+
+            modelBuilder.Entity("LarColabs.WebApi.Models.ColaboradorTelefoneLog", b =>
+                {
+                    b.HasOne("LarColabs.WebApi.Models.Colaborador", "Colaborador")
+                        .WithMany()
+                        .HasForeignKey("ColaboradorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LarColabs.WebApi.Models.Telefone", "Telefone")
+                        .WithMany()
                         .HasForeignKey("TelefoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

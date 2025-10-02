@@ -51,6 +51,7 @@ builder.Services.AddDbContext<LarColabsContext>(options =>
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ColaboradorService>();
 builder.Services.AddScoped<TelefoneService>();
+builder.Services.AddScoped<ColaboradorTelefoneService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 
