@@ -15,7 +15,6 @@ builder.Configuration
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "LarColabs.WebApi", Version = "v1" });
@@ -23,11 +22,11 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Insira o token JWT desta forma: Bearer {seu token}"
+        Description = "Insira o token JWT (apenas o token)."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -41,7 +40,7 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
@@ -74,7 +73,38 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"error\": \"Token expirado\"}");
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"error\": \"Token inválido\"}");
+            }
+        },
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
+            if (string.IsNullOrEmpty(context.Request.Headers["Authorization"]))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"error\": \"Token não informado\"}");
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
+
 
 var app = builder.Build();
 
@@ -86,7 +116,9 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();

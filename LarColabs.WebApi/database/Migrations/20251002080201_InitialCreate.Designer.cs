@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LarColabs.WebApi.Database.Migrations
 {
     [DbContext(typeof(LarColabsContext))]
-    [Migration("20251002061721_InitialCreate")]
+    [Migration("20251002080201_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -39,6 +39,9 @@ namespace LarColabs.WebApi.Database.Migrations
                     b.Property<DateTime?>("AtualizadoEm")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("AtualizadoPor")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CPF")
                         .IsRequired()
                         .HasMaxLength(11)
@@ -46,6 +49,9 @@ namespace LarColabs.WebApi.Database.Migrations
 
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CriadoPor")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("DataNascimento")
                         .HasColumnType("timestamp with time zone");
@@ -125,7 +131,7 @@ namespace LarColabs.WebApi.Database.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<string>("Propriedade")
+                    b.Property<string>("Patrimonio")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");

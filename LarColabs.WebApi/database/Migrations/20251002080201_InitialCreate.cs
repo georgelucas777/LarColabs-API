@@ -22,6 +22,8 @@ namespace LarColabs.WebApi.Database.Migrations
                     CPF = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
                     DataNascimento = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Ativo = table.Column<bool>(type: "boolean", nullable: false),
+                    CriadoPor = table.Column<int>(type: "integer", nullable: false),
+                    AtualizadoPor = table.Column<int>(type: "integer", nullable: true),
                     CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -39,7 +41,7 @@ namespace LarColabs.WebApi.Database.Migrations
                     DDD = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     Numero = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     Tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Propriedade = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Patrimonio = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
