@@ -4,3 +4,4 @@ services:
   api:
     environment:
       - DOTNET_ENVIRONMENT=Docker
+      - Jwt__Key=KAfs2z5rsJJ88l0x2wnGxGeUbwK9B5Xha6e1jFDPrhBPZSRffY01xP9eOxGl32WC7MIkbYPSbpqqZ1UtNoR4ow==
