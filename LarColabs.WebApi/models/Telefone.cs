@@ -20,13 +20,16 @@ namespace LarColabs.WebApi.Models
         public string Tipo { get; set; }
 
         [StringLength(50)]
-        public string Propriedade { get; set; }
+        public string Patrimonio { get; set; }
 
         [StringLength(20)]
         public string Status { get; set; }
 
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
         public DateTime? AtualizadoEm { get; set; }
+
+        public int CriadoPor { get; set; }
+        public int? AtualizadoPor { get; set; }
 
         public ICollection<ColaboradorTelefone> ColaboradoresTelefones { get; set; }
     }

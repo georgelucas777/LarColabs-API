@@ -18,6 +18,9 @@ namespace LarColabs.WebApi.Models
 
         public bool Ativo { get; set; } = true;
 
+        public int CriadoPor { get; set; }
+        public int? AtualizadoPor { get; set; }
+
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
         public DateTime? AtualizadoEm { get; set; }
 
