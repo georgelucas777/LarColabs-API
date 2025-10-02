@@ -20,7 +20,7 @@ namespace LarColabs.WebApi.Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     NomeCompleto = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     CPF = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
-                    DataNascimento = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataNascimento = table.Column<DateOnly>(type: "date", nullable: false),
                     Ativo = table.Column<bool>(type: "boolean", nullable: false),
                     CriadoPor = table.Column<int>(type: "integer", nullable: false),
                     AtualizadoPor = table.Column<int>(type: "integer", nullable: true),
@@ -44,7 +44,9 @@ namespace LarColabs.WebApi.Database.Migrations
                     Patrimonio = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CriadoPor = table.Column<int>(type: "integer", nullable: false),
+                    AtualizadoPor = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,10 +80,8 @@ namespace LarColabs.WebApi.Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ColaboradorId = table.Column<int>(type: "integer", nullable: false),
                     TelefoneId = table.Column<int>(type: "integer", nullable: false),
-                    CriadoPor = table.Column<string>(type: "text", nullable: false),
-                    CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AtualizadoPor = table.Column<string>(type: "text", nullable: false),
-                    AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CriadoPor = table.Column<int>(type: "integer", nullable: false),
+                    CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,6 +94,35 @@ namespace LarColabs.WebApi.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ColaboradoresTelefones_Telefones_TelefoneId",
+                        column: x => x.TelefoneId,
+                        principalTable: "Telefones",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ColaboradorTelefoneLog",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ColaboradorId = table.Column<int>(type: "integer", nullable: false),
+                    TelefoneId = table.Column<int>(type: "integer", nullable: false),
+                    Acao = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    UsuarioId = table.Column<int>(type: "integer", nullable: false),
+                    DataHora = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ColaboradorTelefoneLog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ColaboradorTelefoneLog_Colaboradores_ColaboradorId",
+                        column: x => x.ColaboradorId,
+                        principalTable: "Colaboradores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ColaboradorTelefoneLog_Telefones_TelefoneId",
                         column: x => x.TelefoneId,
                         principalTable: "Telefones",
                         principalColumn: "Id",
@@ -138,6 +167,16 @@ namespace LarColabs.WebApi.Database.Migrations
                 column: "TelefoneId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ColaboradorTelefoneLog_ColaboradorId",
+                table: "ColaboradorTelefoneLog",
+                column: "ColaboradorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ColaboradorTelefoneLog_TelefoneId",
+                table: "ColaboradorTelefoneLog",
+                column: "TelefoneId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Telefones_DDD_Numero",
                 table: "Telefones",
                 columns: new[] { "DDD", "Numero" },
@@ -166,6 +205,9 @@ namespace LarColabs.WebApi.Database.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ColaboradoresTelefones");
+
+            migrationBuilder.DropTable(
+                name: "ColaboradorTelefoneLog");
 
             migrationBuilder.DropTable(
                 name: "UsuarioLoginLogs");
