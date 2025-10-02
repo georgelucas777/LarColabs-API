@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using LarColabs.WebApi.Models;
+using LarColabs.WebApi.Enums;
+using System;
 
 namespace LarColabs.WebApi.Database
 {
@@ -41,7 +43,34 @@ namespace LarColabs.WebApi.Database
                 .WithMany()
                 .HasForeignKey(log => log.UsuarioId);
 
+            modelBuilder.Entity<Telefone>()
+                .Property(t => t.Tipo)
+                .HasConversion(
+                    v => v.ToString().ToLower(), 
+                    v => (TipoTelefone)Enum.Parse(typeof(TipoTelefone), Capitalize(v))
+                );
+
+            modelBuilder.Entity<Telefone>()
+                .Property(t => t.Patrimonio)
+                .HasConversion(
+                    v => v.ToString().ToLower(),
+                    v => (PatrimonioTelefone)Enum.Parse(typeof(PatrimonioTelefone), Capitalize(v))
+                );
+
+            modelBuilder.Entity<Telefone>()
+                .Property(t => t.Status)
+                .HasConversion(
+                    v => v.ToString().ToLower(),
+                    v => (StatusTelefone)Enum.Parse(typeof(StatusTelefone), Capitalize(v))
+                );
+
             base.OnModelCreating(modelBuilder);
+        }
+
+        private static string Capitalize(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return char.ToUpper(value[0]) + value.Substring(1);
         }
     }
 }

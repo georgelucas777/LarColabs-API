@@ -5,7 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using LarColabs.WebApi.Enums;
+using Microsoft.OpenApi.Any;
 using System.Text.Json.Serialization;
+using System.Text.Json;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,7 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: true));
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +30,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddSwaggerGen(c =>
 {
+
+
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "LarColabs.WebApi", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -49,6 +56,37 @@ builder.Services.AddSwaggerGen(c =>
                 }
             },
             Array.Empty<string>()
+        }
+    });
+    
+    c.MapType<TipoTelefone>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Enum = new List<IOpenApiAny>
+        {
+            new OpenApiString("movel"),
+            new OpenApiString("fixo")
+        }
+    });
+
+    c.MapType<PatrimonioTelefone>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Enum = new List<IOpenApiAny>
+        {
+            new OpenApiString("pessoal"),
+            new OpenApiString("corporativo")
+        }
+    });
+
+    c.MapType<StatusTelefone>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Enum = new List<IOpenApiAny>
+        {
+            new OpenApiString("ativo"),
+            new OpenApiString("desativado"),
+            new OpenApiString("manutencao")
         }
     });
 });

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LarColabs.WebApi.Enums;
 
 namespace LarColabs.WebApi.Models
 {
@@ -16,14 +17,14 @@ namespace LarColabs.WebApi.Models
         [Required, StringLength(15)]
         public string Numero { get; set; }
 
-        [StringLength(50)]
-        public string Tipo { get; set; }
+        [Required]
+        public TipoTelefone Tipo { get; set; }
 
-        [StringLength(50)]
-        public string Patrimonio { get; set; }
+        [Required]
+        public PatrimonioTelefone Patrimonio { get; set; }
 
-        [StringLength(20)]
-        public string Status { get; set; }
+        [Required]
+        public StatusTelefone Status { get; set; }
 
         public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
         public DateTime? AtualizadoEm { get; set; }
