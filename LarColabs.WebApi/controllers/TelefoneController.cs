@@ -62,7 +62,11 @@ namespace LarColabs.WebApi.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return Conflict(new { mensagem = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensagem = "Erro interno no servidor.", detalhe = ex.Message });
             }
         }
 
@@ -84,7 +88,11 @@ namespace LarColabs.WebApi.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return Conflict(new { mensagem = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensagem = "Erro interno no servidor.", detalhe = ex.Message });
             }
         }
 
