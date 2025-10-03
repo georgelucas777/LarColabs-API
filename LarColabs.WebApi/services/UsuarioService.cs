@@ -126,7 +126,9 @@ namespace LarColabs.WebApi.Services
                 {
                     Id = usuario.Id,
                     Nome = usuario.Nome,
-                    Email = usuario.Email
+                    Email = usuario.Email,
+                    Cpf = usuario.Cpf,
+                    Ativo = usuario.Ativo
                 },
                 Token = tokenString
             };
@@ -144,5 +146,7 @@ namespace LarColabs.WebApi.Services
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
+        public string Cpf { get; set; }
+        public bool Ativo { get; set; }
     }
 }
