@@ -92,5 +92,22 @@ namespace LarColabs.WebApi.Services
                 .Where(ct => ct.TelefoneId == telefoneId)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Colaborador>> ObterTodosComTelefonesAsync()
+        {
+            return await _context.Colaboradores
+                .Include(c => c.ColaboradoresTelefones)
+                    .ThenInclude(ct => ct.Telefone)
+                .ToListAsync();
+        }
+
+
+        public async Task<Colaborador?> ObterPorIdComTelefonesAsync(int colaboradorId)
+        {
+            return await _context.Colaboradores
+                .Include(c => c.ColaboradoresTelefones)
+                    .ThenInclude(ct => ct.Telefone)
+                .FirstOrDefaultAsync(c => c.Id == colaboradorId);
+        }
     }
 }

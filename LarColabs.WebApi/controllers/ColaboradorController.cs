@@ -126,27 +126,28 @@ namespace LarColabs.WebApi.Controllers
             }
         }
 
-        [HttpGet("{colaboradorId}/Telefones")]
-        public async Task<ActionResult<IEnumerable<object>>> ObterTelefonesPorColaborador(int colaboradorId)
+        [HttpGet("{colaboradorId}/ListaTelefones")]
+        public async Task<ActionResult<ColaboradorTelefonesDto>> ObterTelefonesPorColaborador(int colaboradorId)
         {
-            var telefones = await _colaboradorTelefoneService.ObterPorColaboradorAsync(colaboradorId);
+            var colaborador = await _colaboradorTelefoneService.ObterPorIdComTelefonesAsync(colaboradorId);
 
-            if (telefones == null || !telefones.Any())
-                return NotFound(new { message = "Nenhum telefone vinculado a este colaborador." });
+            if (colaborador == null)
+                return NotFound(new { message = "Colaborador não encontrado." });
 
-            // Monta um objeto limpo para retorno (pode criar DTO depois se quiser)
-            var result = telefones.Select(t => new
-            {
-                t.Telefone.Id,
-                t.Telefone.DDD,
-                t.Telefone.Numero,
-                t.Telefone.Tipo,
-                t.Telefone.Patrimonio,
-                t.ColaboradorId,
-                t.TelefoneId
-            });
+            var colaboradorDto = _mapper.Map<ColaboradorTelefonesDto>(colaborador);
 
-            return Ok(result);
+            return Ok(colaboradorDto);
         }
+
+        [HttpGet("ListaTelefones")]
+        public async Task<ActionResult<IEnumerable<ColaboradorTelefonesDto>>> ObterTodosComTelefones()
+        {
+            var colaboradores = await _colaboradorTelefoneService.ObterTodosComTelefonesAsync();
+
+            var colaboradoresDto = _mapper.Map<IEnumerable<ColaboradorTelefonesDto>>(colaboradores);
+
+            return Ok(colaboradoresDto);
+        }
+
     }
 }

@@ -12,6 +12,11 @@ namespace LarColabs.WebApi.Profiles
             CreateMap<ColaboradorUpdateDto, Colaborador>();
 
             CreateMap<Colaborador, ColaboradorReadDto>();
+
+            CreateMap<Telefone, TelefoneDto>();
+            CreateMap<Colaborador, ColaboradorTelefonesDto>()
+                .ForMember(dest => dest.Telefones,
+                    opt => opt.MapFrom(src => src.ColaboradoresTelefones.Select(ct => ct.Telefone)));
         }
     }
 }
