@@ -108,7 +108,8 @@ docker run -d -p 5000:5000 larcolabs-api
 
 ### 🔹 Gerenciar migrations
 ```bash
-dotnet ef migrations add NomeDaMigration
+dotnet ef migrations add NomeDaMigration -o Database/Migrations
+
 dotnet ef database update
 ```
 

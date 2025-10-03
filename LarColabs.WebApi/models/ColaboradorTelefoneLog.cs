@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LarColabs.WebApi.Models
 {
@@ -9,22 +8,19 @@ namespace LarColabs.WebApi.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Colaborador")]
+        [Required]
         public int ColaboradorId { get; set; }
 
-        [ForeignKey("Telefone")]
+        [Required]
         public int TelefoneId { get; set; }
 
         [Required, StringLength(20)]
-        public string Acao { get; set; }
+        public string Acao { get; set; } = string.Empty;
 
         [Required]
         public int UsuarioId { get; set; }
 
         [Required]
         public DateTime DataHora { get; set; } = DateTime.UtcNow;
-
-        public Colaborador Colaborador { get; set; }
-        public Telefone Telefone { get; set; }
     }
 }

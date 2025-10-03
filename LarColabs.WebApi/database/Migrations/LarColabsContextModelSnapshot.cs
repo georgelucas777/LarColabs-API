@@ -269,21 +269,17 @@ namespace LarColabs.WebApi.Database.Migrations
 
             modelBuilder.Entity("LarColabs.WebApi.Models.ColaboradorTelefoneLog", b =>
                 {
-                    b.HasOne("LarColabs.WebApi.Models.Colaborador", "Colaborador")
+                    b.HasOne("LarColabs.WebApi.Models.Colaborador", null)
                         .WithMany()
                         .HasForeignKey("ColaboradorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LarColabs.WebApi.Models.Telefone", "Telefone")
+                    b.HasOne("LarColabs.WebApi.Models.Telefone", null)
                         .WithMany()
                         .HasForeignKey("TelefoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Colaborador");
-
-                    b.Navigation("Telefone");
                 });
 
             modelBuilder.Entity("LarColabs.WebApi.Models.UsuarioLoginLog", b =>

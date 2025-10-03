@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LarColabs.WebApi.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class CreateInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,9 +40,9 @@ namespace LarColabs.WebApi.Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DDD = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     Numero = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
-                    Tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Patrimonio = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Tipo = table.Column<string>(type: "text", nullable: false),
+                    Patrimonio = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
                     CriadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AtualizadoEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CriadoPor = table.Column<int>(type: "integer", nullable: false),
@@ -120,13 +120,13 @@ namespace LarColabs.WebApi.Database.Migrations
                         column: x => x.ColaboradorId,
                         principalTable: "Colaboradores",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ColaboradorTelefoneLog_Telefones_TelefoneId",
                         column: x => x.TelefoneId,
                         principalTable: "Telefones",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

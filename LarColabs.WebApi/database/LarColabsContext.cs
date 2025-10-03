@@ -43,10 +43,22 @@ namespace LarColabs.WebApi.Database
                 .WithMany()
                 .HasForeignKey(log => log.UsuarioId);
 
+            modelBuilder.Entity<ColaboradorTelefoneLog>()
+                .HasOne<Telefone>()
+                .WithMany()
+                .HasForeignKey(l => l.TelefoneId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ColaboradorTelefoneLog>()
+                .HasOne<Colaborador>()
+                .WithMany()
+                .HasForeignKey(l => l.ColaboradorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Telefone>()
                 .Property(t => t.Tipo)
                 .HasConversion(
-                    v => v.ToString().ToLower(), 
+                    v => v.ToString().ToLower(),
                     v => (TipoTelefone)Enum.Parse(typeof(TipoTelefone), Capitalize(v))
                 );
 

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LarColabs.WebApi.Database.Migrations
 {
     [DbContext(typeof(LarColabsContext))]
-    [Migration("20251002134738_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251003194953_CreateInicial")]
+    partial class CreateInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,18 +165,15 @@ namespace LarColabs.WebApi.Database.Migrations
 
                     b.Property<string>("Patrimonio")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -275,21 +272,17 @@ namespace LarColabs.WebApi.Database.Migrations
 
             modelBuilder.Entity("LarColabs.WebApi.Models.ColaboradorTelefoneLog", b =>
                 {
-                    b.HasOne("LarColabs.WebApi.Models.Colaborador", "Colaborador")
+                    b.HasOne("LarColabs.WebApi.Models.Colaborador", null)
                         .WithMany()
                         .HasForeignKey("ColaboradorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LarColabs.WebApi.Models.Telefone", "Telefone")
+                    b.HasOne("LarColabs.WebApi.Models.Telefone", null)
                         .WithMany()
                         .HasForeignKey("TelefoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Colaborador");
-
-                    b.Navigation("Telefone");
                 });
 
             modelBuilder.Entity("LarColabs.WebApi.Models.UsuarioLoginLog", b =>
