@@ -18,7 +18,7 @@ namespace LarColabs.WebApi.Controllers
         private readonly IMapper _mapper;
 
         public ColaboradorController(
-            ColaboradorService colaboradorService, 
+            ColaboradorService colaboradorService,
             ColaboradorTelefoneService colaboradorTelefoneService,
             IMapper mapper)
         {
@@ -124,6 +124,29 @@ namespace LarColabs.WebApi.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        [HttpGet("{colaboradorId}/Telefones")]
+        public async Task<ActionResult<IEnumerable<object>>> ObterTelefonesPorColaborador(int colaboradorId)
+        {
+            var telefones = await _colaboradorTelefoneService.ObterPorColaboradorAsync(colaboradorId);
+
+            if (telefones == null || !telefones.Any())
+                return NotFound(new { message = "Nenhum telefone vinculado a este colaborador." });
+
+            // Monta um objeto limpo para retorno (pode criar DTO depois se quiser)
+            var result = telefones.Select(t => new
+            {
+                t.Telefone.Id,
+                t.Telefone.DDD,
+                t.Telefone.Numero,
+                t.Telefone.Tipo,
+                t.Telefone.Patrimonio,
+                t.ColaboradorId,
+                t.TelefoneId
+            });
+
+            return Ok(result);
         }
     }
 }
