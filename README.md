@@ -115,6 +115,8 @@ dotnet ef database update
 ### 🔹 Buildar aplicação
 ```bash
 dotnet build
+
+docker-compose up -d --build #Usando Docker
 ```
 
 ### 🔹 Executar em modo dev
@@ -125,6 +127,8 @@ dotnet run
 ### 🔹 Acessar logs em tempo real
 ```bash
 dotnet watch run
+
+docker logs -f larcolabs-api #Usando Docker
 ```
 
 ---

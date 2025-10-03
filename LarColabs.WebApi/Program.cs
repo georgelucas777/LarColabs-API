@@ -152,6 +152,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:5173") // porta do Vite
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 
 var app = builder.Build();
 
@@ -161,6 +170,8 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "LarColabs.WebApi v1");
     c.RoutePrefix = "swagger";
 });
+
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
