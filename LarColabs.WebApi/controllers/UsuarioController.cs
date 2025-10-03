@@ -61,9 +61,10 @@ namespace LarColabs.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
         {
-            var response = await _usuarioService.LoginAsync(request.Email, request.Senha);
+            var (response, error) = await _usuarioService.LoginAsync(request.Email, request.Senha);
+
             if (response == null)
-                return Unauthorized("Credenciais inválidas ou usuário inativo");
+                return Unauthorized(new { message = error });
 
             return Ok(response);
         }

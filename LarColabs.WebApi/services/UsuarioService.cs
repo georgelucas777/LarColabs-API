@@ -84,13 +84,14 @@ namespace LarColabs.WebApi.Services
             return true;
         }
 
-        public async Task<LoginResponse?> LoginAsync(string email, string senha)
+        public async Task<(LoginResponse? Response, string? Error)> LoginAsync(string email, string senha)
         {
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(senha, usuario.Senha))
-                return null;
+                return (null, "Credenciais inválidas");
 
-            if (!usuario.Ativo) return null;
+            if (!usuario.Ativo)
+                return (null, "Usuário inativo");
 
             var log = new UsuarioLoginLog
             {
@@ -107,10 +108,10 @@ namespace LarColabs.WebApi.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                    new Claim(ClaimTypes.Email, usuario.Email),
-                    new Claim(ClaimTypes.Name, usuario.Nome)
-                }),
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+            new Claim(ClaimTypes.Email, usuario.Email),
+            new Claim(ClaimTypes.Name, usuario.Nome)
+        }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
@@ -120,7 +121,7 @@ namespace LarColabs.WebApi.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return new LoginResponse
+            return (new LoginResponse
             {
                 Usuario = new UsuarioResponse
                 {
@@ -131,8 +132,9 @@ namespace LarColabs.WebApi.Services
                     Ativo = usuario.Ativo
                 },
                 Token = tokenString
-            };
+            }, null);
         }
+
     }
 
     public class LoginResponse
