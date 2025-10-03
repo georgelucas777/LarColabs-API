@@ -57,11 +57,22 @@ namespace LarColabs.WebApi.Controllers
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
-            var colaborador = _mapper.Map<Colaborador>(dto);
-            var novoColaborador = await _colaboradorService.AdicionarAsync(colaborador, usuarioId);
+            try
+            {
+                var colaborador = _mapper.Map<Colaborador>(dto);
+                var novoColaborador = await _colaboradorService.AdicionarAsync(colaborador, usuarioId);
 
-            var colaboradorDto = _mapper.Map<ColaboradorReadDto>(novoColaborador);
-            return CreatedAtAction(nameof(ObterPorId), new { id = colaboradorDto.Id }, colaboradorDto);
+                var colaboradorDto = _mapper.Map<ColaboradorReadDto>(novoColaborador);
+                return CreatedAtAction(nameof(ObterPorId), new { id = colaboradorDto.Id }, colaboradorDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { mensagem = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensagem = "Erro interno no servidor.", detalhe = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
@@ -70,13 +81,24 @@ namespace LarColabs.WebApi.Controllers
             var usuarioId = ObterUsuarioId();
             if (usuarioId == 0) return Unauthorized();
 
-            var colaborador = _mapper.Map<Colaborador>(dto);
-            var colaboradorAtualizado = await _colaboradorService.AtualizarAsync(id, colaborador, usuarioId);
+            try
+            {
+                var colaborador = _mapper.Map<Colaborador>(dto);
+                var colaboradorAtualizado = await _colaboradorService.AtualizarAsync(id, colaborador, usuarioId);
 
-            if (colaboradorAtualizado == null) return NotFound();
+                if (colaboradorAtualizado == null) return NotFound();
 
-            var colaboradorDto = _mapper.Map<ColaboradorReadDto>(colaboradorAtualizado);
-            return Ok(colaboradorDto);
+                var colaboradorDto = _mapper.Map<ColaboradorReadDto>(colaboradorAtualizado);
+                return Ok(colaboradorDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { mensagem = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensagem = "Erro interno no servidor.", detalhe = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
